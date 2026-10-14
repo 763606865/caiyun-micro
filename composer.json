@@ -1,0 +1,87 @@
+{
+    "name": "caiyun/micro",
+    "description": "Laravel microservice toolkit with pluggable service discovery and registration (Nacos, Consul, Etcd, Zookeeper, static, log).",
+    "keywords": ["laravel", "microservice", "nacos", "consul", "etcd", "zookeeper", "service-discovery", "service-registry", "caiyun"],
+    "homepage": "https://github.com/763606865/caiyun-micro",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "刘骏霖",
+            "email": "763606865@qq.com"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/763606865/caiyun-micro/issues",
+        "source": "https://github.com/763606865/caiyun-micro"
+    },
+    "require": {
+        "php": "^8.3",
+        "ext-json": "*",
+        "guzzlehttp/guzzle": "^7.0",
+        "illuminate/cache": "^13.0",
+        "illuminate/console": "^13.0",
+        "illuminate/contracts": "^13.0",
+        "illuminate/http": "^13.0",
+        "illuminate/log": "^13.0",
+        "illuminate/support": "^13.0"
+    },
+    "require-dev": {
+        "laravel/pint": "^1.29.3",
+        "mockery/mockery": "^1.6",
+        "orchestra/testbench": "^11.0",
+        "phpunit/phpunit": "^12.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Caiyun\\Micro\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Caiyun\\Micro\\Tests\\": "tests/"
+        }
+    },
+    "archive": {
+        "exclude": [
+            "/.env*",
+            "/.gitattributes",
+            "/.github",
+            "/.gitignore",
+            "/.idea",
+            "/.phpunit.cache",
+            "/.phpunit.result.cache",
+            "/composer.lock",
+            "/phpunit.xml.dist",
+            "/pint.json",
+            "/tests",
+            "/vendor"
+        ]
+    },
+    "scripts": {
+        "pint": "@php vendor/bin/pint --test src config tests",
+        "pint:fix": "@php vendor/bin/pint src config tests",
+        "test": "@php vendor/bin/phpunit",
+        "check": ["@composer validate --strict", "@pint", "@test"]
+    },
+    "suggest": {
+        "ext-zookeeper": "Required when using the zookeeper microservice driver."
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-main": "1.0.x-dev"
+        },
+        "laravel": {
+            "providers": [
+                "Caiyun\\Micro\\MicroServiceProvider"
+            ],
+            "aliases": {
+                "Micro": "Caiyun\\Micro\\Facades\\Micro"
+            }
+        }
+    },
+    "minimum-stability": "stable"
+}
