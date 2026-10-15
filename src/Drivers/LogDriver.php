@@ -6,6 +6,9 @@ use Caiyun\Micro\Contracts\ServiceRegistry;
 use Caiyun\Micro\ServiceInstance;
 use Illuminate\Log\LogManager;
 
+/**
+ * Debug registry that keeps instances in memory and writes lifecycle events to the log.
+ */
 class LogDriver implements ServiceRegistry
 {
     /** @var list<ServiceInstance> */

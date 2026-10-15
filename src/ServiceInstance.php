@@ -2,6 +2,9 @@
 
 namespace Caiyun\Micro;
 
+/**
+ * Immutable description of one service instance in a registry.
+ */
 final class ServiceInstance
 {
     /**
@@ -52,6 +55,9 @@ final class ServiceInstance
         );
     }
 
+    /**
+     * Absolute base URI such as http://127.0.0.1:8080.
+     */
     public function uri(): string
     {
         return sprintf('%s://%s:%d', $this->scheme, $this->ip, $this->port);

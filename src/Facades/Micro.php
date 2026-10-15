@@ -9,6 +9,8 @@ use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Facade;
 
 /**
+ * Facade for the MicroManager service registry.
+ *
  * @method static list<ServiceInstance> getInstances(string $serviceName)
  * @method static ServiceInstance|null select(string $serviceName)
  * @method static void register(ServiceInstance $instance)

@@ -8,6 +8,9 @@ use Caiyun\Micro\ServiceInstance;
 use Caiyun\Micro\Support\ConsulClient;
 use Illuminate\Contracts\Cache\Repository as CacheRepository;
 
+/**
+ * Service registry driver backed by Consul (TTL checks for heartbeats).
+ */
 class ConsulDriver implements ServiceRegistry
 {
     /** @param array<string, mixed> $config */

@@ -5,6 +5,9 @@ namespace Caiyun\Micro\LoadBalancers;
 use Caiyun\Micro\Contracts\LoadBalancer;
 use Caiyun\Micro\ServiceInstance;
 
+/**
+ * Round-robin selection with a cursor keyed by the current instance set.
+ */
 class RoundRobinLoadBalancer implements LoadBalancer
 {
     /** @var array<string, int> */

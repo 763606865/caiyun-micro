@@ -7,6 +7,9 @@ use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
 
+/**
+ * Thin HTTP client for the Consul Agent / Health APIs.
+ */
 class ConsulClient
 {
     /** @param array<string, mixed> $config */

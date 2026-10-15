@@ -8,6 +8,7 @@ use Caiyun\Micro\Drivers\ConsulDriver;
 use Caiyun\Micro\Drivers\EtcdDriver;
 use Caiyun\Micro\Drivers\LogDriver;
 use Caiyun\Micro\Drivers\NacosDriver;
+use Caiyun\Micro\Drivers\PolarisDriver;
 use Caiyun\Micro\Drivers\StaticDriver;
 use Caiyun\Micro\Drivers\ZookeeperDriver;
 use Caiyun\Micro\Exceptions\MicroException;
@@ -18,6 +19,7 @@ use Caiyun\Micro\Support\ConsulClient;
 use Caiyun\Micro\Support\EtcdClient;
 use Caiyun\Micro\Support\NacosClient;
 use Caiyun\Micro\Support\PeclZookeeperConnection;
+use Caiyun\Micro\Support\PolarisClient;
 use Illuminate\Contracts\Cache\Factory as CacheFactory;
 use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Contracts\Container\Container;
@@ -27,6 +29,9 @@ use Illuminate\Support\Manager;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
 
+/**
+ * Laravel Manager that resolves registry drivers and exposes discovery / registration APIs.
+ */
 class MicroManager extends Manager implements ServiceRegistry
 {
     private ?LoadBalancer $loadBalancer = null;
@@ -140,6 +145,9 @@ class MicroManager extends Manager implements ServiceRegistry
         return [$service, []];
     }
 
+    /**
+     * Build a ServiceInstance from micro.self configuration.
+     */
     public function selfInstance(): ServiceInstance
     {
         $self = $this->config->get('micro.self', []);
@@ -266,6 +274,20 @@ class MicroManager extends Manager implements ServiceRegistry
         );
     }
 
+    /** @param array<string, mixed> $config */
+    protected function createPolarisDriver(array $config): ServiceRegistry
+    {
+        return new PolarisDriver(
+            $config,
+            new PolarisClient($config),
+            $this->discoveryCache(),
+            (int) $this->config->get('micro.cache_ttl', 15),
+        );
+    }
+
+    /**
+     * Shared discovery cache store when the host application has cache bound.
+     */
     private function discoveryCache(): ?Repository
     {
         if (! $this->container->bound('cache')) {
@@ -275,6 +297,9 @@ class MicroManager extends Manager implements ServiceRegistry
         return $this->container->make(CacheFactory::class)->store();
     }
 
+    /**
+     * Resolve the configured load balancer strategy (lazy singleton).
+     */
     private function loadBalancer(): LoadBalancer
     {
         if ($this->loadBalancer !== null) {
@@ -300,12 +325,15 @@ class MicroManager extends Manager implements ServiceRegistry
         return is_array($config) ? $config : [];
     }
 
+    /**
+     * Best-effort local IP detection when MICRO_SERVICE_IP is not configured.
+     */
     private function detectIp(): string
     {
         $hostname = gethostname();
         if (is_string($hostname) && $hostname !== '') {
             $ip = gethostbyname($hostname);
-            if (is_string($ip) && $ip !== '' && $ip !== $hostname && filter_var($ip, FILTER_VALIDATE_IP)) {
+            if ($ip !== '' && $ip !== $hostname && filter_var($ip, FILTER_VALIDATE_IP)) {
                 return $ip;
             }
         }

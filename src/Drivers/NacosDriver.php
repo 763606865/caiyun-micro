@@ -8,6 +8,9 @@ use Caiyun\Micro\ServiceInstance;
 use Caiyun\Micro\Support\NacosClient;
 use Illuminate\Contracts\Cache\Repository as CacheRepository;
 
+/**
+ * Service registry driver backed by Nacos Open API.
+ */
 class NacosDriver implements ServiceRegistry
 {
     /** @param array<string, mixed> $config */

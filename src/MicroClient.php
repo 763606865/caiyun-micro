@@ -6,6 +6,9 @@ use Caiyun\Micro\Exceptions\MicroException;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
 
+/**
+ * Builds Laravel HTTP clients pointed at discovered service instances.
+ */
 class MicroClient
 {
     public function __construct(private readonly MicroManager $manager) {}

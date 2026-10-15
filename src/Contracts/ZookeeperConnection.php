@@ -2,6 +2,9 @@
 
 namespace Caiyun\Micro\Contracts;
 
+/**
+ * Minimal ZooKeeper operations required by ZookeeperDriver (PECL or test doubles).
+ */
 interface ZookeeperConnection
 {
     public function ensurePath(string $path): void;

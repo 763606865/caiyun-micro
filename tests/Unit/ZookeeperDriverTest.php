@@ -69,6 +69,9 @@ class ZookeeperDriverTest extends TestCase
     }
 }
 
+/**
+ * In-memory ZookeeperConnection used by unit tests.
+ */
 class FakeZookeeperConnection implements ZookeeperConnection
 {
     /** @var array<string, string> */
@@ -135,7 +138,7 @@ class FakeZookeeperConnection implements ZookeeperConnection
             $children[] = $rest;
         }
 
-        return array_values($children);
+        return $children;
     }
 
     public function delete(string $path): void

@@ -7,6 +7,7 @@
 - `consul`：Consul HTTP API（TTL Check 心跳）
 - `etcd`：etcd v3 HTTP/JSON API（Lease 保活）
 - `zookeeper`：ZooKeeper（需 `ext-zookeeper`，节点心跳时间戳）
+- `polaris`：PolarisMesh / 北极星 SDK HTTP API（Discover / Register / Heartbeat）
 - `log`：仅记录日志，便于本地调试
 
 业务侧通过服务别名调用下游，例如 `Micro::for('agent')->post(...)`，无需关心实例 IP。
@@ -70,9 +71,16 @@ ZOOKEEPER_HOSTS=127.0.0.1:2181
 ZOOKEEPER_GROUP=DEFAULT_GROUP
 ZOOKEEPER_ROOT_PATH=/caiyun-micro/services
 ZOOKEEPER_INSTANCE_TTL=30
+
+# Polaris（北极星）
+POLARIS_SERVER=http://127.0.0.1:8090
+POLARIS_NAMESPACE=default
+POLARIS_GROUP=DEFAULT_GROUP
+POLARIS_TOKEN=
+POLARIS_HEARTBEAT_TTL=5
 ```
 
-将 `MICRO_DRIVER` 设为 `nacos` / `consul` / `etcd` / `zookeeper` 即可切换注册中心。
+将 `MICRO_DRIVER` 设为 `nacos` / `consul` / `etcd` / `zookeeper` / `polaris` 即可切换注册中心。
 
 `static` 驱动请在 `config/micro.php` 中配置 endpoints：
 
@@ -150,5 +158,10 @@ Micro::extend('consul', function ($app, array $config) {
 
 ```bash
 composer install
+composer pint:fix
+composer phpstan
 composer test
+
+# 或一次性校验
+composer check
 ```

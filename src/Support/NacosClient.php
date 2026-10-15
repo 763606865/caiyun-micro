@@ -7,6 +7,9 @@ use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
 
+/**
+ * Thin HTTP client for the Nacos Open API (auth, discovery, registration, heartbeat).
+ */
 class NacosClient
 {
     private ?string $accessToken = null;
@@ -143,13 +146,17 @@ class NacosClient
         }
 
         $payload = $response->json();
-        $token = is_array($payload) ? ($payload['accessToken'] ?? null) : null;
+        if (! is_array($payload)) {
+            throw new MicroException('Nacos login response was not JSON.');
+        }
+
+        $token = $payload['accessToken'] ?? null;
 
         if (! is_string($token) || $token === '') {
             throw new MicroException('Nacos login response did not include accessToken.');
         }
 
-        $ttl = is_array($payload) ? (int) ($payload['tokenTtl'] ?? 18000) : 18000;
+        $ttl = (int) ($payload['tokenTtl'] ?? 18000);
         $this->accessToken = $token;
         $this->tokenExpiresAt = time() + max(60, $ttl - 60);
 

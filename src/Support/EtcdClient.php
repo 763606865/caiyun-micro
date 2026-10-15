@@ -7,6 +7,9 @@ use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
 
+/**
+ * Thin HTTP client for the etcd v3 JSON (gRPC-gateway) API.
+ */
 class EtcdClient
 {
     private ?string $authToken = null;

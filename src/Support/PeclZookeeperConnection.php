@@ -4,15 +4,19 @@ namespace Caiyun\Micro\Support;
 
 use Caiyun\Micro\Contracts\ZookeeperConnection;
 use Caiyun\Micro\Exceptions\MicroException;
+use Zookeeper;
 
+/**
+ * ZookeeperConnection backed by the PECL ext-zookeeper extension.
+ */
 class PeclZookeeperConnection implements ZookeeperConnection
 {
-    private object $zk;
+    private Zookeeper $zk;
 
     /** @param array<string, mixed> $config */
     public function __construct(array $config)
     {
-        if (! class_exists(\Zookeeper::class)) {
+        if (! class_exists(Zookeeper::class)) {
             throw new MicroException(
                 'Zookeeper driver requires the ext-zookeeper PECL extension. Install it or choose another MICRO_DRIVER.'
             );
@@ -22,7 +26,7 @@ class PeclZookeeperConnection implements ZookeeperConnection
         $timeout = (int) ($config['timeout_ms'] ?? 5000);
 
         try {
-            $this->zk = new \Zookeeper($hosts, null, $timeout);
+            $this->zk = new Zookeeper($hosts, null, $timeout);
         } catch (\Throwable $e) {
             throw new MicroException('Zookeeper connection failed: '.$e->getMessage(), previous: $e);
         }
@@ -46,9 +50,12 @@ class PeclZookeeperConnection implements ZookeeperConnection
             try {
                 $this->zk->create($current, '', $this->worldAcl());
             } catch (\Throwable $e) {
-                if (! $this->exists($current)) {
-                    throw new MicroException('Failed to create Zookeeper path ['.$current.']: '.$e->getMessage(), previous: $e);
+                // Another client may have created the node between exists() and create().
+                if ($this->exists($current)) {
+                    continue;
                 }
+
+                throw new MicroException('Failed to create Zookeeper path ['.$current.']: '.$e->getMessage(), previous: $e);
             }
         }
     }
@@ -80,7 +87,11 @@ class PeclZookeeperConnection implements ZookeeperConnection
 
             $value = $this->zk->get($path);
 
-            return is_string($value) ? $value : null;
+            if ($value === false) {
+                return null;
+            }
+
+            return $value;
         } catch (\Throwable $e) {
             throw new MicroException('Zookeeper get failed ['.$path.']: '.$e->getMessage(), previous: $e);
         }
@@ -95,7 +106,11 @@ class PeclZookeeperConnection implements ZookeeperConnection
 
             $children = $this->zk->getChildren($path);
 
-            return is_array($children) ? array_values(array_map('strval', $children)) : [];
+            if ($children === false) {
+                return [];
+            }
+
+            return array_map('strval', $children);
         } catch (\Throwable $e) {
             throw new MicroException('Zookeeper getChildren failed ['.$path.']: '.$e->getMessage(), previous: $e);
         }
@@ -114,10 +129,11 @@ class PeclZookeeperConnection implements ZookeeperConnection
         }
     }
 
+    /** @phpstan-impure */
     public function exists(string $path): bool
     {
         try {
-            return (bool) $this->zk->exists($path);
+            return $this->zk->exists($path) !== false;
         } catch (\Throwable $e) {
             throw new MicroException('Zookeeper exists failed ['.$path.']: '.$e->getMessage(), previous: $e);
         }
@@ -129,7 +145,7 @@ class PeclZookeeperConnection implements ZookeeperConnection
     private function worldAcl(): array
     {
         return [[
-            'perms' => \Zookeeper::PERM_ALL,
+            'perms' => Zookeeper::PERM_ALL,
             'scheme' => 'world',
             'id' => 'anyone',
         ]];

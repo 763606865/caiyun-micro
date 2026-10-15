@@ -7,6 +7,9 @@ use Caiyun\Micro\Contracts\ZookeeperConnection;
 use Caiyun\Micro\ServiceInstance;
 use Illuminate\Contracts\Cache\Repository as CacheRepository;
 
+/**
+ * Service registry driver backed by ZooKeeper nodes with heartbeat timestamps.
+ */
 class ZookeeperDriver implements ServiceRegistry
 {
     /** @param array<string, mixed> $config */

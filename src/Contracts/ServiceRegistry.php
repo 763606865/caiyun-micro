@@ -4,6 +4,9 @@ namespace Caiyun\Micro\Contracts;
 
 use Caiyun\Micro\ServiceInstance;
 
+/**
+ * Contract implemented by every pluggable registry driver.
+ */
 interface ServiceRegistry
 {
     /**

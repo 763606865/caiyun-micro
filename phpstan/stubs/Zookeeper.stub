@@ -1,0 +1,42 @@
+<?php
+
+/**
+ * Minimal stub for the PECL zookeeper extension used by PeclZookeeperConnection.
+ */
+class Zookeeper
+{
+    public const PERM_ALL = 31;
+
+    /**
+     * @param  callable|null  $watcher_cb
+     */
+    public function __construct(string $host = '', $watcher_cb = null, int $recv_timeout = 10000) {}
+
+    /**
+     * @param  array<int, array{perms: int, scheme: string, id: string}>|null  $acls
+     */
+    public function create(string $path, string $value, $acls = null, ?int $flags = null): string {}
+
+    /**
+     * @param  array<string, mixed>|null  $stat
+     */
+    public function set(string $path, string $data, int $version = -1, ?array &$stat = null): bool {}
+
+    /**
+     * @param  array<string, mixed>|null  $stat
+     * @return string|false
+     */
+    public function get(string $path, ?callable $watcher_cb = null, ?array &$stat = null, int $max_size = 0) {}
+
+    /**
+     * @return list<string>|false
+     */
+    public function getChildren(string $path, ?callable $watcher_cb = null) {}
+
+    public function delete(string $path, int $version = -1): bool {}
+
+    /**
+     * @return array<string, mixed>|false
+     */
+    public function exists(string $path, ?callable $watcher_cb = null) {}
+}

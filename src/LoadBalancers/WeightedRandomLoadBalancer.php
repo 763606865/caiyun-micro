@@ -5,6 +5,9 @@ namespace Caiyun\Micro\LoadBalancers;
 use Caiyun\Micro\Contracts\LoadBalancer;
 use Caiyun\Micro\ServiceInstance;
 
+/**
+ * Weighted random selection based on ServiceInstance::$weight.
+ */
 class WeightedRandomLoadBalancer implements LoadBalancer
 {
     public function select(array $instances): ServiceInstance

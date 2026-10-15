@@ -5,17 +5,20 @@ namespace Caiyun\Micro\Console;
 use Caiyun\Micro\MicroManager;
 use Illuminate\Console\Command;
 
+/**
+ * Artisan command: remove the current app instance from the active registry.
+ */
 class DeregisterCommand extends Command
 {
     protected $signature = 'micro:deregister {--driver= : Override the micro driver}';
 
     protected $description = 'Deregister the current Laravel application from the configured registry';
 
-    public function handle(MicroManager $micro): int
+    public function handle(MicroManager $manager): int
     {
-        $manager = $this->laravel->make(MicroManager::class);
-        $registry = $this->option('driver')
-            ? $manager->driver((string) $this->option('driver'))
+        $driver = $this->option('driver');
+        $registry = is_string($driver) && $driver !== ''
+            ? $manager->driver($driver)
             : $manager;
 
         $instance = $manager->selfInstance();

@@ -8,6 +8,9 @@ use Caiyun\Micro\Console\RegisterCommand;
 use Caiyun\Micro\Contracts\ServiceRegistry;
 use Illuminate\Support\ServiceProvider;
 
+/**
+ * Registers the Micro manager, HTTP client, Artisan commands, and optional auto-registration.
+ */
 class MicroServiceProvider extends ServiceProvider
 {
     public function register(): void
@@ -24,7 +27,7 @@ class MicroServiceProvider extends ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                realpath(__DIR__.'/../config/micro.php') => $this->app->configPath('micro.php'),
+                __DIR__.'/../config/micro.php' => $this->app->configPath('micro.php'),
             ], 'micro-config');
 
             $this->commands([
@@ -59,6 +62,9 @@ class MicroServiceProvider extends ServiceProvider
         }
     }
 
+    /**
+     * Whether boot-time auto registration is enabled and self.service is configured.
+     */
     private function shouldAutoRegister(): bool
     {
         if (! (bool) config('micro.self.auto_register', false)) {

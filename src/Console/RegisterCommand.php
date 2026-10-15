@@ -5,6 +5,9 @@ namespace Caiyun\Micro\Console;
 use Caiyun\Micro\MicroManager;
 use Illuminate\Console\Command;
 
+/**
+ * Artisan command: register the current app instance into the active registry.
+ */
 class RegisterCommand extends Command
 {
     protected $signature = 'micro:register {--driver= : Override the micro driver}';
@@ -13,8 +16,9 @@ class RegisterCommand extends Command
 
     public function handle(MicroManager $manager): int
     {
-        $registry = $this->option('driver')
-            ? $manager->driver((string) $this->option('driver'))
+        $driver = $this->option('driver');
+        $registry = is_string($driver) && $driver !== ''
+            ? $manager->driver($driver)
             : $manager;
 
         $instance = $manager->selfInstance();

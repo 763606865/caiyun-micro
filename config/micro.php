@@ -6,7 +6,7 @@ return [
     | Default Microservice Driver
     |--------------------------------------------------------------------------
     |
-    | Supported: "static", "nacos", "consul", "etcd", "zookeeper", "log"
+    | Supported: "static", "nacos", "consul", "etcd", "zookeeper", "polaris", "log"
     |
     */
     'default' => env('MICRO_DRIVER', 'static'),
@@ -131,6 +131,20 @@ return [
             'root_path' => env('ZOOKEEPER_ROOT_PATH', '/caiyun-micro/services'),
             'instance_ttl' => (int) env('ZOOKEEPER_INSTANCE_TTL', 30),
             'timeout_ms' => (int) env('ZOOKEEPER_TIMEOUT_MS', 5000),
+        ],
+
+        'polaris' => [
+            'driver' => 'polaris',
+            'server' => env('POLARIS_SERVER', 'http://127.0.0.1:8090'),
+            'namespace' => env('POLARIS_NAMESPACE', 'default'),
+            'group' => env('POLARIS_GROUP', env('MICRO_SERVICE_GROUP', 'DEFAULT_GROUP')),
+            'token' => env('POLARIS_TOKEN'),
+            'heartbeat_ttl' => (int) env('POLARIS_HEARTBEAT_TTL', 5),
+            'region' => env('POLARIS_REGION', ''),
+            'zone' => env('POLARIS_ZONE', ''),
+            'campus' => env('POLARIS_CAMPUS', ''),
+            'timeout' => (int) env('POLARIS_TIMEOUT', 5),
+            'connect_timeout' => (int) env('POLARIS_CONNECT_TIMEOUT', 3),
         ],
     ],
 ];

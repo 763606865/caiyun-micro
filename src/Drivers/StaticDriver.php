@@ -6,6 +6,9 @@ use Caiyun\Micro\Contracts\ServiceRegistry;
 use Caiyun\Micro\Exceptions\MicroException;
 use Caiyun\Micro\ServiceInstance;
 
+/**
+ * In-memory / config-based registry used for local development and tests.
+ */
 class StaticDriver implements ServiceRegistry
 {
     /** @var array<string, list<ServiceInstance>> */

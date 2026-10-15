@@ -8,6 +8,9 @@ use Caiyun\Micro\ServiceInstance;
 use Caiyun\Micro\Support\EtcdClient;
 use Illuminate\Contracts\Cache\Repository as CacheRepository;
 
+/**
+ * Service registry driver backed by etcd leases under a key prefix.
+ */
 class EtcdDriver implements ServiceRegistry
 {
     /** @var array<string, string> serviceName:ip:port => leaseId */

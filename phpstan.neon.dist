@@ -1,0 +1,16 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+    - vendor/phpstan/phpstan-phpunit/extension.neon
+
+parameters:
+    level: 8
+    phpVersion: 80300
+    paths:
+        - src
+        - config
+        - tests
+    configDirectories:
+        - config
+    stubFiles:
+        - phpstan/stubs/Zookeeper.stub
+    tmpDir: .phpstan.cache
