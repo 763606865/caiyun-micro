@@ -47,7 +47,8 @@ MICRO_AUTO_REGISTER=false
 AGENT_SERVICE_NAME=caiyun-ai-agent
 AGENT_TIMEOUT=60
 
-# Nacos
+# Nacos（2.x 使用 v1，3.x 使用 v3）
+NACOS_API_VERSION=v1
 NACOS_SERVER=http://127.0.0.1:8848
 NACOS_NAMESPACE=
 NACOS_GROUP=DEFAULT_GROUP
@@ -79,6 +80,8 @@ POLARIS_GROUP=DEFAULT_GROUP
 POLARIS_TOKEN=
 POLARIS_HEARTBEAT_TTL=5
 ```
+
+使用 Nacos 3.2.3 时设置 `NACOS_API_VERSION=v3`，并确保 `config/micro.php` 的 Nacos 配置包含 `api_version`（已发布旧配置的项目需要补上该项）。修改后如启用了配置缓存，请执行 `php artisan config:clear`。v3 模式同时适配服务发现、注册、注销、心跳续约及用户名密码登录；默认 `v1` 保持旧接口兼容。
 
 将 `MICRO_DRIVER` 设为 `nacos` / `consul` / `etcd` / `zookeeper` / `polaris` 即可切换注册中心。
 

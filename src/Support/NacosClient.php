@@ -17,7 +17,17 @@ class NacosClient
     private int $tokenExpiresAt = 0;
 
     /** @param array<string, mixed> $config */
-    public function __construct(private readonly array $config) {}
+    public function __construct(private readonly array $config)
+    {
+        if (! in_array($config['api_version'] ?? 'v1', ['v1', 'v3'], true)) {
+            throw new MicroException('Nacos api_version must be v1 or v3.');
+        }
+    }
+
+    public function usesV3(): bool
+    {
+        return ($this->config['api_version'] ?? 'v1') === 'v3';
+    }
 
     /**
      * @param  array<string, scalar|null>  $query
@@ -62,6 +72,34 @@ class NacosClient
      */
     private function request(string $method, string $path, array $query = [], array $form = []): array|string
     {
+        if ($this->usesV3() && str_starts_with($path, '/v1/ns/')) {
+            if ($path === '/v1/ns/instance/beat') {
+                $method = 'post';
+                $path = '/v1/ns/instance';
+                $beat = json_decode((string) ($form['beat'] ?? '{}'), true);
+                if (! is_array($beat)) {
+                    throw new MicroException('Invalid Nacos heartbeat payload.');
+                }
+                $form = array_merge($form, [
+                    'ip' => $beat['ip'] ?? '',
+                    'port' => $beat['port'] ?? 0,
+                    'clusterName' => $beat['cluster'] ?? 'DEFAULT',
+                    'heartBeat' => 'true',
+                ]);
+                unset($form['beat']);
+            }
+            $path = '/v3/client/ns/'.substr($path, strlen('/v1/ns/'));
+            if ($path === '/v3/client/ns/instance/list') {
+                unset($query['healthyOnly']);
+            }
+            if (($query['namespaceId'] ?? null) === '') {
+                $query['namespaceId'] = 'public';
+            }
+            if (($form['namespaceId'] ?? null) === '') {
+                $form['namespaceId'] = 'public';
+            }
+        }
+
         $query = $this->withAuth($query);
 
         try {
@@ -89,6 +127,19 @@ class NacosClient
         }
 
         $json = json_decode($body, true);
+
+        if ($this->usesV3() && str_starts_with($path, '/v3/client/')) {
+            if (! is_array($json) || ! array_key_exists('code', $json) || $json['code'] !== 0) {
+                throw new MicroException("Nacos API request failed: {$body}");
+            }
+
+            $data = $json['data'] ?? null;
+            if (! is_array($data) && ! is_string($data)) {
+                throw new MicroException('Unexpected Nacos API response data.');
+            }
+
+            return $data;
+        }
 
         return is_array($json) ? $json : $body;
     }
@@ -133,7 +184,7 @@ class NacosClient
         }
 
         try {
-            $response = $this->http()->asForm()->post('/v1/auth/login', [
+            $response = $this->http()->asForm()->post($this->usesV3() ? '/v3/auth/user/login' : '/v1/auth/login', [
                 'username' => $username,
                 'password' => $password,
             ]);

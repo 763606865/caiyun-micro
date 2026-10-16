@@ -90,6 +90,7 @@ return [
 
         'nacos' => [
             'driver' => 'nacos',
+            'api_version' => env('NACOS_API_VERSION', 'v1'),
             'server' => env('NACOS_SERVER', 'http://127.0.0.1:8848'),
             'namespace' => env('NACOS_NAMESPACE', ''),
             'group' => env('NACOS_GROUP', 'DEFAULT_GROUP'),

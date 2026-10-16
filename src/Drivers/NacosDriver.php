@@ -45,7 +45,7 @@ class NacosDriver implements ServiceRegistry
             throw new MicroException('Unexpected Nacos instance list response.');
         }
 
-        $hosts = $payload['hosts'] ?? [];
+        $hosts = $this->client->usesV3() ? $payload : ($payload['hosts'] ?? []);
         if (! is_array($hosts)) {
             return [];
         }
@@ -53,6 +53,10 @@ class NacosDriver implements ServiceRegistry
         $instances = [];
         foreach ($hosts as $host) {
             if (! is_array($host)) {
+                continue;
+            }
+
+            if ($this->client->usesV3() && ! ($host['healthy'] ?? true)) {
                 continue;
             }
 
